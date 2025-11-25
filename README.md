@@ -2,6 +2,8 @@
  A RESTful API contains OWASP TOP 10 2023 vulnerabilities
  Developed by OWASP Bursa Technical University Student Chapter
 
+ A deliberately vulnerable RESTful API project designed to demonstrate and practice the OWASP Top 10 (2023) security risks. Built with Node.js, Express.js, and MongoDB, APIGOAT provides a hands-on environment for security testing, exploit demonstrations, and defensive strategy development.
+
  it uses nodeJS runtime enviorment, ExpressJS Framework and mongoose ORM with mongoDB database.
 
 ![2023](https://github.com/OWASP-BURSA-TECHNICAL-UNIVERSITY/APIGOAT/assets/77548038/c3ce96e5-9dac-4d95-ae1e-6a48456fe141)
