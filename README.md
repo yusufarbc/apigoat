@@ -6,7 +6,8 @@
 
  it uses nodeJS runtime enviorment, ExpressJS Framework and mongoose ORM with mongoDB database.
 
-![2023](https://github.com/OWASP-BURSA-TECHNICAL-UNIVERSITY/APIGOAT/assets/77548038/c3ce96e5-9dac-4d95-ae1e-6a48456fe141)
+<img width="1440" alt="logo" src="https://github.com/user-attachments/assets/579e1a51-d83b-41e4-8cc2-3cf1d4e2377a">
+
 
 ## Getting Started
 
