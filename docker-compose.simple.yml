@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # APIGOAT All-in-One Container
+  apigoat:
+    build: .
+    container_name: apigoat
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # Web Interface
+      - "8001:8001"  # API1 - Broken Object Level Authorization
+      - "8002:8002"  # API2 - Broken Authentication
+      - "8003:8003"  # API3 - Broken Object Property Level Authorization
+      - "8004:8004"  # API4 - Unrestricted Resource Consumption
+      - "8005:8005"  # API5 - Broken Function Level Authorization
+      - "8006:8006"  # API6 - Unrestricted Access to Sensitive Business Flows
+      - "8007:8007"  # API7 - Server Side Request Forgery
+      - "8008:8008"  # API8 - Security Misconfiguration
+      - "8009:8009"  # API9 - Improper Inventory Management
+      - "8010:8010"  # API10 - Unsafe Consumption of APIs
+    environment:
+      # MongoDB connection (uses external MongoDB or MongoDB Atlas)
+      - mongoDBURL=mongodb://mongodb:27017/apigoat
+      # OpenWeather API Key (get free key from https://openweathermap.org/api)
+      - OPENWEATHER_API_KEY=your_openweather_api_key_here
+      # Ports (defaults are fine, change if needed)
+      - PORT_WEB=8000
+      - PORT_API1=8001
+      - PORT_API2=8002
+      - PORT_API3=8003
+      - PORT_API4=8004
+      - PORT_API5=8005
+      - PORT_API6=8006
+      - PORT_API7=8007
+      - PORT_API8=8008
+      - PORT_API9=8009
+      - PORT_API10=8010
+      # JWT Keys (change in production)
+      - JWT_KEY1=api1
+      - JWT_KEY2=api2
+      - JWT_KEY3=api3
+      - JWT_KEY4=api4
+      - JWT_KEY5=api5
+      - JWT_KEY6=api6
+      - JWT_KEY7=api7
+      - JWT_KEY8=api8
+      - JWT_KEY9=api9
+      - JWT_KEY10=api10
+    depends_on:
+      - mongodb
+    networks:
+      - apigoat-network
+
+  # MongoDB Database (optional - remove if using MongoDB Atlas)
+  mongodb:
+    image: mongo:7.0
+    container_name: apigoat-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - apigoat-network
+
+networks:
+  apigoat-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="APIGOAT - A deliberately vulnerable RESTful API showcasing OWASP API Security Top 10 (2023) vulnerabilities for penetration testing and secure coding education.">
+    <meta name="keywords" content="OWASP, API Security, Penetration Testing, Docker, Node.js, Security Training, Vulnerable API">
+    <meta name="author" content="Yusuf Talha Arabacı">
+    <title>APIGOAT - OWASP API Security Top 10 Training Platform</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --dark-bg: #1a1a1a;
+            --light-bg: #f8f9fa;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .navbar-brand i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            transition: color 0.3s;
+            margin: 0 10px;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a252f 100%);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23e74c3c" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s;
+        }
+        
+        .hero p.lead {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s 0.2s both;
+        }
+        
+        .btn-primary-custom {
+            background: var(--primary-color);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 1s 0.4s both;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-outline-custom {
+            border: 2px solid white;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s;
+            animation: fadeInUp 1s 0.6s both;
+        }
+        
+        .btn-outline-custom:hover {
+            background: white;
+            color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: var(--light-bg);
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary-color), #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+        
+        /* Vulnerabilities Section */
+        .vulnerabilities {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .section-title .underline {
+            width: 80px;
+            height: 4px;
+            background: var(--primary-color);
+            margin: 0 auto;
+        }
+        
+        .vuln-card {
+            background: var(--light-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .vuln-card:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        
+        .vuln-number {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+        
+        .vuln-card h4 {
+            display: inline-block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+        
+        .vuln-card p {
+            margin: 15px 0 0 55px;
+            color: #666;
+        }
+        
+        /* Tech Stack */
+        .tech-stack {
+            padding: 80px 0;
+            background: var(--dark-bg);
+            color: white;
+        }
+        
+        .tech-icon {
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .tech-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .tech-icon i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .tech-icon h5 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Quick Start */
+        .quick-start {
+            padding: 80px 0;
+            background: var(--light-bg);
+        }
+        
+        .code-block {
+            background: var(--secondary-color);
+            color: #2ecc71;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin: 20px 0;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .code-block::before {
+            content: '$ ';
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Stats */
+        .stats {
+            padding: 60px 0;
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #c0392b 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: #c0392b;
+        }
+        
+        .social-links {
+            margin: 20px 0;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p.lead {
+                font-size: 1.1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Badge */
+        .badge-custom {
+            background: var(--warning-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-virus"></i>APIGOAT
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#vulnerabilities">Vulnerabilities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tech-stack">Tech Stack</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#quick-start">Quick Start</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/yusufarbc/apigoat" target="_blank">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 hero-content">
+                    <h1>
+                        <i class="fas fa-bug"></i> APIGOAT
+                        <span class="badge-custom">Educational</span>
+                    </h1>
+                    <p class="lead">
+                        A deliberately vulnerable RESTful API showcasing <strong>OWASP API Security Top 10 (2023)</strong> vulnerabilities.
+                        Perfect for penetration testing training, secure coding education, and API security research.
+                    </p>
+                    <div class="mt-4">
+                        <a href="#quick-start" class="btn btn-primary-custom me-3">
+                            <i class="fas fa-rocket"></i> Get Started
+                        </a>
+                        <a href="https://github.com/yusufarbc/apigoat" target="_blank" class="btn btn-outline-custom">
+                            <i class="fab fa-github"></i> View on GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center mt-5 mt-lg-0">
+                    <i class="fas fa-shield-virus" style="font-size: 15rem; opacity: 0.1;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">10</span>
+                        <span class="stat-label">OWASP Vulnerabilities</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">11</span>
+                        <span class="stat-label">Microservices</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">~60</span>
+                        <span class="stat-label">API Endpoints</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">1</span>
+                        <span class="stat-label">Click Setup</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why APIGOAT?</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Educational Excellence</h3>
+                        <p>Learn API security through hands-on exploitation of real-world vulnerability patterns following OWASP API Top 10 2023.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fab fa-docker"></i>
+                        </div>
+                        <h3>Cloud-Native Ready</h3>
+                        <p>Fully containerized with Docker Compose. One command launches 11 microservices with MongoDB, zero configuration needed.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3>Safe Learning Environment</h3>
+                        <p>Isolated Docker network ensures safe exploitation practice without risk to production systems or real data.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Real Code Examples</h3>
+                        <p>Study actual vulnerable code patterns and their secure alternatives. Perfect for code review training.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3>Tool Testing Platform</h3>
+                        <p>Test security scanners like Burp Suite, OWASP ZAP, and custom fuzzing tools against known vulnerabilities.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>CTF Ready</h3>
+                        <p>Perfect for Capture The Flag competitions, security workshops, and API penetration testing labs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vulnerabilities Section -->
+    <section class="vulnerabilities" id="vulnerabilities">
+        <div class="container">
+            <div class="section-title">
+                <h2>OWASP API Top 10 (2023) Coverage</h2>
+                <div class="underline"></div>
+                <p class="mt-3 text-muted">Each API demonstrates a specific OWASP vulnerability</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="vuln-card">
+                        <span class="vuln-number">1</span>
+                        <h4>Broken Object Level Authorization (BOLA)</h4>
+                        <p>Access other users' files without ownership validation. Demonstrates horizontal privilege escalation.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">2</span>
+                        <h4>Broken Authentication</h4>
+                        <p>Clear-text credentials over HTTP, continuous login attempts, token in request body instead of headers.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">3</span>
+                        <h4>Broken Object Property Level Authorization</h4>
+                        <p>Expose sensitive properties like isAdmin flag and private posts to non-privileged users.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">4</span>
+                        <h4>Unrestricted Resource Consumption</h4>
+                        <p>No rate limiting, no pagination - fetch unlimited data causing DoS vulnerability.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">5</span>
+                        <h4>Broken Function Level Authorization</h4>
+                        <p>Authentication middleware completely bypassed - create resources without any token.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="vuln-card">
+                        <span class="vuln-number">6</span>
+                        <h4>Unrestricted Access to Business Flows</h4>
+                        <p>View all flight bookings without authentication - sensitive business data exposed.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">7</span>
+                        <h4>Server Side Request Forgery (SSRF)</h4>
+                        <p>User-controlled URLs in server requests - access internal services and cloud metadata.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">8</span>
+                        <h4>Security Misconfiguration</h4>
+                        <p>Permissive CORS policy allowing requests from any origin - XSS and data theft risks.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">9</span>
+                        <h4>Improper Inventory Management</h4>
+                        <p>Undocumented endpoints with unknown functionality - hidden attack surface.</p>
+                    </div>
+                    <div class="vuln-card">
+                        <span class="vuln-number">10</span>
+                        <h4>Unsafe Consumption of APIs</h4>
+                        <p>Hardcoded API keys, unsanitized external API responses - credential leakage and injection risks.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-stack" id="tech-stack">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="text-white">Technology Stack</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fab fa-node-js"></i>
+                        <h5>Node.js 18</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fas fa-server"></i>
+                        <h5>Express.js</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                        <h5>MongoDB 7.0</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fab fa-docker"></i>
+                        <h5>Docker Compose</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fas fa-code"></i>
+                        <h5>Mongoose ORM</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fas fa-lock"></i>
+                        <h5>JWT + bcrypt</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fab fa-bootstrap"></i>
+                        <h5>Bootstrap 5</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="tech-icon">
+                        <i class="fab fa-linux"></i>
+                        <h5>Alpine Linux</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="quick-start" id="quick-start">
+        <div class="container">
+            <div class="section-title">
+                <h2>Quick Start</h2>
+                <div class="underline"></div>
+                <p class="mt-3 text-muted">Get started in under 60 seconds</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h4 class="mb-4"><i class="fab fa-windows"></i> Windows (PowerShell)</h4>
+                    <div class="code-block">
+                        git clone https://github.com/yusufarbc/apigoat.git
+                        <button class="copy-btn" onclick="copyCode(this, 'git clone https://github.com/yusufarbc/apigoat.git')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="code-block">
+                        cd apigoat
+                    </div>
+                    <div class="code-block">
+                        .\start.ps1
+                    </div>
+                    
+                    <h4 class="mb-4 mt-5"><i class="fab fa-linux"></i> Linux / Mac</h4>
+                    <div class="code-block">
+                        git clone https://github.com/yusufarbc/apigoat.git
+                    </div>
+                    <div class="code-block">
+                        cd apigoat
+                    </div>
+                    <div class="code-block">
+                        docker compose up -d
+                    </div>
+                    
+                    <div class="alert alert-success mt-4" role="alert">
+                        <i class="fas fa-check-circle"></i> 
+                        <strong>That's it!</strong> Open <code>http://localhost:8000</code> in your browser.
+                    </div>
+                    
+                    <h4 class="mb-3 mt-5"><i class="fas fa-rocket"></i> What Happens?</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Docker Compose builds 11 containers</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> MongoDB starts with demo data</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> 10 vulnerable APIs launch on ports 8001-8010</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Web interface opens at port 8000</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Ready for exploitation in isolated environment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2><i class="fas fa-graduation-cap"></i> Ready to Learn API Security?</h2>
+            <p>Start your journey into API penetration testing and secure coding today</p>
+            <a href="https://github.com/yusufarbc/apigoat" target="_blank" class="btn btn-outline-custom btn-lg">
+                <i class="fab fa-github"></i> Star on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="social-links">
+                <a href="https://github.com/yusufarbc/apigoat" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://github.com/yusufarbc" target="_blank" title="Author">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="https://owasp.org/www-project-api-security/" target="_blank" title="OWASP API Security">
+                    <i class="fas fa-shield-alt"></i>
+                </a>
+            </div>
+            <p class="mt-3">
+                Developed by <a href="https://github.com/yusufarbc" target="_blank">Yusuf Talha Arabacı</a><br>
+                Originally initiated under <strong>OWASP Bursa Technical University Student Chapter</strong>
+            </p>
+            <p class="mt-3 text-muted">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>Educational Purpose Only</strong> - This is a deliberately vulnerable application<br>
+                Do not deploy to production or expose to public networks
+            </p>
+            <p class="mt-3">
+                Licensed under <a href="https://github.com/yusufarbc/apigoat/blob/main/LICENSE" target="_blank">GNU GPL</a> &copy; 2024-2025
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Copy code to clipboard
+        function copyCode(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.style.background = 'rgba(46, 204, 113, 0.3)';
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.background = 'rgba(255,255,255,0.1)';
+                }, 2000);
+            });
+        }
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'linear-gradient(135deg, #1a252f 0%, #2c3e50 100%)';
+            } else {
+                navbar.style.background = 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)';
+            }
+        });
+    </script>
+</body>
+</html>

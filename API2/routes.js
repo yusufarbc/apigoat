@@ -83,8 +83,7 @@ Account.find({ email: req.body.email })
 .then( (accounts) => {
     if (accounts.length <1) {
         return res.status(404).json({
-            message: "Mail not found, account doesn't exist",
-            message: 'Auth Failed'
+            message: 'Auth Failed - account does not exist'
         });
     } 
     bcrypt.compare(req.body.password, accounts[0].password, (err, result) => {

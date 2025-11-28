@@ -98,7 +98,7 @@ router.patch('/books/:bookId', (req, res, next) => {
     for (const ops of req.body){
         updateOps[ops.propName] = ops.value;
     }
-    Product.updateOne({ _id:id }, { $set: updateOps})
+    Book.updateOne({ _id:id }, { $set: updateOps})
     .exec()
     .then(result => {
         console.log(result);

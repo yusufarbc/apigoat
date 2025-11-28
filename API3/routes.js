@@ -37,14 +37,20 @@ router.get('/users', checkAuth, (req, res, next) => {
 // Require only authantication not admin privileges
 router.get('/users/:userId', checkAuth, (req, res, next) => {
   const userId = req.params.userId;
-  const user = users[userId];
-
-  if (!user) {
-    return res.status(404).send('User not found');
-  }
-
-  // Return all user properties regardless of permissions!
-  res.send(user);
+  
+  Account.findById(userId)
+    .exec()
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({message: 'User not found'});
+      }
+      // Return all user properties regardless of permissions! (Vulnerable)
+      res.status(200).json({user: user});
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({error: err});
+    });
 });
 
 // signup endpoint creates an account
@@ -103,8 +109,7 @@ router.post("/login", (req, res, next) => {
   .then( (accounts) => {
       if (accounts.length <1) {
           return res.status(404).json({
-              message: "Mail not found, account doesn't exist",
-              message: 'Auth Failed'
+              message: 'Auth Failed - account does not exist'
           });
       } 
       bcrypt.compare(req.body.password, accounts[0].password, (err, result) => {
