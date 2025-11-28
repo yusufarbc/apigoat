@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![APIGOAT Banner](https://github.com/user-attachments/assets/579e1a51-d83b-41e4-8cc2-3cf1d4e2377a)
+![APIGOAT Banner](./web/public/logo.png)
 
 ### A Deliberately Vulnerable RESTful API for Security Training
 
@@ -29,7 +29,7 @@ APIGOAT is a deliberately vulnerable RESTful API designed for **penetration test
 ### ✨ Key Features
 
 - 🎯 **10 OWASP API Top 10 (2023) Vulnerabilities** - Complete coverage
-- 🐳 **Cloud-Native & Containerized** - One-click Docker Compose deployment
+- 🐳 **Cloud-Native & Containerized** - Single Docker image (MongoDB + 10 APIs + Web)
 - 🔒 **Isolated Environment** - Safe for exploitation without risk
 - 📚 **Educational Focus** - Learn by doing with real vulnerable code
 - 🚀 **Zero Configuration** - No MongoDB Atlas or manual setup required
@@ -37,7 +37,7 @@ APIGOAT is a deliberately vulnerable RESTful API designed for **penetration test
 
 ---
 
-## 🚀 Quick Start (One-Click)
+## 🚀 Quick Start (Single Container)
 
 ### Prerequisites
 
@@ -71,7 +71,14 @@ cd apigoat
 **Linux / macOS**
 
 ```bash
-docker compose up -d
+# Build image (first time only)
+docker build -t apigoat:all .
+
+# Run container (maps all API ports + MongoDB)
+docker run -d --name apigoat-all \
+   -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 -p 8004:8004 \
+   -p 8005:8005 -p 8006:8006 -p 8007:8007 -p 8008:8008 -p 8009:8009 \
+   -p 8010:8010 -p 27017:27017 apigoat:all
 ```
 
 </td>
@@ -82,16 +89,33 @@ docker compose up -d
 
 The automated setup will:
 
-1. ✅ Verify Docker installation
-2. ✅ Build optimized Alpine-based containers (~150MB each)
-3. ✅ Start MongoDB 7.0 with health checks
-4. ✅ Launch 10 vulnerable APIs (ports 8001-8010)
-5. ✅ Start web interface (port 8000)
-6. ✅ Open http://localhost:8000 in your browser automatically
+1. ✅ Build a single Ubuntu-based image (Node.js 18 + MongoDB 7.0)
+2. ✅ Start embedded MongoDB with health checks
+3. ✅ Launch 10 vulnerable APIs (ports 8001–8010)
+4. ✅ Start web interface (port 8000)
+5. ✅ Provide local MongoDB at mongodb://localhost:27017/apigoat
+6. ✅ (Windows) Auto-open http://localhost:8000 in browser
 
 ![APIGOAT Interface](https://github.com/user-attachments/assets/9d08f073-9c29-4cce-a466-5baf3fa723ff)
 
-**Total startup time:** ~30-60 seconds
+**Total startup time:** ~60–90 seconds on first build (subsequent runs faster)
+
+### Useful Commands
+
+```bash
+# View logs
+docker logs -f apigoat-all
+
+# Stop / remove
+docker stop apigoat-all; docker rm apigoat-all
+
+# Rebuild after changes
+docker build -t apigoat:all .
+```
+
+### Note on Previous Multi-Container Setup
+
+Earlier versions used 11 separate containers via Docker Compose. The lab now ships as a single image to simplify classroom / workshop environments and reduce resource overhead. Security behaviors and vulnerabilities remain unchanged.
 
 ---
 
@@ -100,36 +124,36 @@ The automated setup will:
 ### System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Docker Network                            │
-│  ┌──────────┐  ┌─────────────────────────────────────────────┐ │
-│  │  MongoDB │  │         11 Microservices                     │ │
-│  │   7.0    │◄─┤  Web (8000) + API1-10 (8001-8010)          │ │
-│  │  (27017) │  └─────────────────────────────────────────────┘ │
-│  └──────────┘                                                    │
-│                ┌───────────────────────────────┐                 │
-│                │  Persistent Volume Storage    │                 │
-│                │  mongodb_data                 │                 │
-│                └───────────────────────────────┘                 │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                   Single Docker Container                    │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  Node.js 18 Runtime (Ubuntu 22.04)                     │ │
+│  │  ┌──────────────────────────────────────────────────┐ │ │
+│  │  │  Embedded MongoDB 7.0 (port 27017)               │ │ │
+│  │  └──────────────────────────────────────────────────┘ │ │
+│  │  Web UI (8000)                                        │ │
+│  │  API1–API10 (8001–8010)                               │ │
+│  │  Shared filesystem & in-memory communication          │ │
+│  └────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ### Services
 
-| Service | Port | Purpose | Container Status |
-|---------|------|---------|------------------|
-| **web** | 8000 | HTML documentation & testing UI | Always running |
-| **api1** | 8001 | BOLA vulnerability demo | Always running |
-| **api2** | 8002 | Broken Authentication | Always running |
-| **api3** | 8003 | BOPLA vulnerability | Always running |
-| **api4** | 8004 | Resource Consumption | Always running |
-| **api5** | 8005 | Function Level Auth | Always running |
-| **api6** | 8006 | Business Flow Access | Always running |
-| **api7** | 8007 | SSRF vulnerability | Always running |
-| **api8** | 8008 | Security Misconfiguration | Always running |
-| **api9** | 8009 | Improper Inventory | Always running |
-| **api10** | 8010 | Unsafe API Consumption | Always running |
-| **mongodb** | 27017 | Database with health checks | Healthy |
+| Service | Port | Purpose | Process Status |
+|---------|------|---------|----------------|
+| **web** | 8000 | HTML documentation & testing UI | Embedded |
+| **api1** | 8001 | BOLA vulnerability demo | Embedded |
+| **api2** | 8002 | Broken Authentication | Embedded |
+| **api3** | 8003 | BOPLA vulnerability | Embedded |
+| **api4** | 8004 | Resource Consumption | Embedded |
+| **api5** | 8005 | Function Level Auth | Embedded |
+| **api6** | 8006 | Business Flow Access | Embedded |
+| **api7** | 8007 | SSRF vulnerability | Embedded |
+| **api8** | 8008 | Security Misconfiguration | Embedded |
+| **api9** | 8009 | Improper Inventory | Embedded |
+| **api10** | 8010 | Unsafe API Consumption | Embedded |
+| **mongodb** | 27017 | Database with health checks | Embedded |
 
 ### Technology Stack
 
@@ -137,13 +161,12 @@ The automated setup will:
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| **Runtime** | Node.js | 18 Alpine | JavaScript execution |
+| **Runtime** | Node.js | 18 (Ubuntu base) | JavaScript execution |
 | **Framework** | Express.js | 4.19.2 | Web application framework |
 | **Database** | MongoDB | 7.0 | NoSQL document storage |
 | **ODM** | Mongoose | 8.4.5 | MongoDB object modeling |
 | **Auth** | JWT + bcrypt | 9.0.2 / 5.1.1 | Token & password security |
 | **Container** | Docker | 20.10+ | Containerization |
-| **Orchestration** | Docker Compose | 2.0+ | Multi-container management |
 
 </div>
 
@@ -474,11 +497,12 @@ lsof -i :8000
 
 **Safe Usage:**
 ```bash
-# ✅ GOOD: Local development only
-docker compose up -d
+# ✅ GOOD: Use the single container
+docker build -t apigoat:all .
+docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all
 
-# ❌ BAD: Never expose publicly
-docker compose -f docker-compose.yml -p 0.0.0.0:8000:8000 up  # DON'T DO THIS
+# ❌ BAD: Never expose publicly without network controls
+# Never bind 0.0.0.0 on untrusted networks
 ```
 
 > **Note for Instructors**: Use this platform in sandboxed VMs or isolated networks for classroom training.
@@ -490,24 +514,26 @@ docker compose -f docker-compose.yml -p 0.0.0.0:8000:8000 up  # DON'T DO THIS
 ### What Makes This Cloud-Native?
 
 - **🎯 Zero Configuration**: No manual MongoDB setup or environment configuration
-- **🔒 Network Isolation**: All services communicate via private Docker bridge network
-- **💾 Data Persistence**: MongoDB volume survives container restarts
-- **🏥 Health Checks**: MongoDB health monitoring prevents premature API startup
-- **📦 Alpine Base Images**: ~150MB per API container (vs ~900MB with standard Node.js)
-- **🚀 Fast Builds**: Layer caching and `npm ci` for deterministic installations
-- **👤 Non-Root User**: Security-hardened containers run as `nodejs` user (UID 1001)
+- **🔒 Embedded Architecture**: MongoDB and all services in single container for simplicity
+- **💾 Stateful Design**: MongoDB runs in-memory or with volume mount for persistence
+- **🏥 Health Checks**: Built-in health monitoring for container orchestration
+- **📦 Ubuntu Base**: Node.js 18 + MongoDB 7.0 in one image (~1.2GB)
+- **🚀 Fast Startup**: All services launch together via startup script
 - **♻️ Reproducible**: Identical environment across all platforms and machines
-- **🔄 Easy Teardown**: Complete cleanup with `docker compose down -v`
+- **🔄 Easy Teardown**: Complete cleanup with `docker stop apigoat-all && docker rm apigoat-all`
 
 ### Container Details
 
 ```yaml
-Image Size Comparison:
-├─ MongoDB 7.0:        ~700 MB
-├─ Node.js (standard): ~900 MB per API
-└─ Node.js (Alpine):   ~150 MB per API  ✅ 83% smaller!
+Single Container Architecture:
+├─ Base: Ubuntu 22.04
+├─ Runtime: Node.js 18
+├─ Database: MongoDB 7.0 (embedded)
+├─ Services: 10 APIs + Web UI
+└─ Total Image Size: ~1.2 GB
 
-Total: ~2.2 GB (vs ~10+ GB without optimization)
+Previous Multi-Container: ~2.2 GB (11 containers)
+Current Single Container: ~1.2 GB ✅ 45% smaller + simpler deployment
 ```
 
 ### Migration from Legacy Setup
@@ -527,7 +553,8 @@ Total: ~2.2 GB (vs ~10+ GB without optimization)
 ```
 1. .\start.ps1  (Windows)
    or
-   docker compose up -d  (Linux/Mac)
+   docker build -t apigoat:all . && docker run -d --name apigoat-all \
+     -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all  (Linux/Mac)
 ✅ Simple, reliable, cross-platform
 ```
 
@@ -638,7 +665,7 @@ cd apigoat
 git checkout -b feature/your-feature-name
 
 # 4. Make your changes and test
-docker compose up -d --build
+docker build -t apigoat:all . && docker run -d --name apigoat-test -p 8000-8010:8000-8010 apigoat:all
 
 # 5. Commit with descriptive messages
 git commit -m "Add: Implement new vulnerability example for API11"
@@ -652,14 +679,14 @@ git push origin feature/your-feature-name
 ### Coding Standards
 
 - **Node.js**: Follow Airbnb JavaScript Style Guide
-- **Docker**: Use Alpine base images for size optimization
+- **Docker**: Single-container architecture for educational simplicity
 - **Security**: Document vulnerable patterns clearly with comments
 - **Documentation**: Update README.md for new features
 
 ### Pull Request Checklist
 
-- [ ] Code builds without errors (`docker compose build`)
-- [ ] All containers start successfully (`docker compose up -d`)
+- [ ] Code builds without errors (`docker build -t apigoat:all .`)
+- [ ] Container starts successfully (`docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all`)
 - [ ] Changes are well-documented with comments
 - [ ] README.md updated (if applicable)
 - [ ] No unintentional security improvements (keep vulnerabilities intact)

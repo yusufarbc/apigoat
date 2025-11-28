@@ -1,5 +1,5 @@
-# APIGOAT - Cloud-Native Startup Script
-# One-Click Docker Compose Launcher for Windows
+# APIGOAT - Single-Container Startup Script
+# Builds and runs the all-in-one vulnerable lab container (MongoDB + APIs + Web)
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  APIGOAT - OWASP Top 10 API Security  " -ForegroundColor Cyan
@@ -8,7 +8,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Check if Docker is installed and running
-Write-Host "[1/4] Checking Docker..." -ForegroundColor Yellow
+Write-Host "[1/3] Checking Docker..." -ForegroundColor Yellow
 try {
     $dockerVersion = docker --version 2>$null
     if ($LASTEXITCODE -ne 0) {
@@ -32,36 +32,44 @@ try {
 
 # Check if Docker Compose is available
 Write-Host ""
-Write-Host "[2/4] Checking Docker Compose..." -ForegroundColor Yellow
-try {
-    $composeVersion = docker compose version 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        throw "Docker Compose not found"
-    }
-    Write-Host "  ✓ Docker Compose found: $composeVersion" -ForegroundColor Green
-} catch {
-    Write-Host "  ✗ Docker Compose is not available!" -ForegroundColor Red
-    Write-Host "  → Please install Docker Desktop (includes Compose)" -ForegroundColor Yellow
-    exit 1
+Write-Host "[2/3] Checking existing container..." -ForegroundColor Yellow
+if (docker ps -a --format "{{.Names}}" | Select-String -Pattern "apigoat-all" -Quiet) {
+    Write-Host "  → Old container found. Stopping & removing..." -ForegroundColor Yellow
+    docker stop apigoat-all 2>$null | Out-Null
+    docker rm apigoat-all 2>$null | Out-Null
+    Write-Host "  ✓ Cleaned previous container" -ForegroundColor Green
+} else {
+    Write-Host "  ✓ No previous container" -ForegroundColor Green
 }
 
 # Stop and remove existing containers (clean slate)
 Write-Host ""
-Write-Host "[3/4] Cleaning up old containers..." -ForegroundColor Yellow
-docker compose down --remove-orphans 2>&1 | Out-Null
-Write-Host "  ✓ Old containers cleaned" -ForegroundColor Green
+Write-Host "[3/3] Building single lab image..." -ForegroundColor Yellow
+Write-Host "  → docker build -t yusufarbc/apigoat:all ." -ForegroundColor Cyan
+docker build -t yusufarbc/apigoat:all .
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "  ✗ Build failed" -ForegroundColor Red
+    exit 1
+}
+Write-Host "  ✓ Image built" -ForegroundColor Green
+
+Write-Host "Starting container (ports 8000-8010 + 27017)..." -ForegroundColor Yellow
+docker run -d --name apigoat-all -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 -p 8004:8004 -p 8005:8005 -p 8006:8006 -p 8007:8007 -p 8008:8008 -p 8009:8009 -p 8010:8010 -p 27017:27017 yusufarbc/apigoat:all
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "  ✗ Container start failed" -ForegroundColor Red
+    exit 1
+}
 
 # Start all services with Docker Compose
 Write-Host ""
 Write-Host "[4/4] Starting APIGOAT services..." -ForegroundColor Yellow
 Write-Host "  → Building images (this may take a few minutes on first run)..." -ForegroundColor Cyan
 
-docker compose up -d --build
-
-if ($LASTEXITCODE -eq 0) {
+Start-Sleep -Seconds 5
+if (docker ps --format "{{.Names}}" | Select-String -Pattern "apigoat-all" -Quiet) {
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Green
-    Write-Host "  ✓ APIGOAT is running successfully!   " -ForegroundColor Green
+    Write-Host "  ✓ APIGOAT (single container) running " -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor Green
     Write-Host ""
     Write-Host "Services available:" -ForegroundColor White
@@ -79,9 +87,10 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "  → MongoDB:        mongodb://admin:apigoat123@localhost:27017" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Useful commands:" -ForegroundColor White
-    Write-Host "  → View logs:      docker compose logs -f" -ForegroundColor Yellow
-    Write-Host "  → Stop services:  docker compose down" -ForegroundColor Yellow
-    Write-Host "  → Restart:        docker compose restart" -ForegroundColor Yellow
+    Write-Host "  → View logs:      docker logs -f apigoat-all" -ForegroundColor Yellow
+    Write-Host "  → Stop:           docker stop apigoat-all" -ForegroundColor Yellow
+    Write-Host "  → Remove:         docker rm apigoat-all" -ForegroundColor Yellow
+    Write-Host "  → Rebuild:        docker build -t yusufarbc/apigoat:all ." -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Opening web interface in browser..." -ForegroundColor Cyan
     Start-Sleep -Seconds 3
@@ -89,12 +98,12 @@ if ($LASTEXITCODE -eq 0) {
 } else {
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Red
-    Write-Host "  ✗ Failed to start APIGOAT            " -ForegroundColor Red
+    Write-Host "  ✗ Failed to start single container   " -ForegroundColor Red
     Write-Host "========================================" -ForegroundColor Red
     Write-Host ""
     Write-Host "Troubleshooting:" -ForegroundColor Yellow
-    Write-Host "  1. Check logs: docker compose logs" -ForegroundColor White
+    Write-Host "  1. Check logs: docker logs apigoat-all" -ForegroundColor White
     Write-Host "  2. Verify ports 8000-8010, 27017 are free" -ForegroundColor White
-    Write-Host "  3. Ensure Docker has enough resources (4GB+ RAM recommended)" -ForegroundColor White
+    Write-Host "  3. Ensure Docker has enough resources (2GB+ RAM recommended)" -ForegroundColor White
     exit 1
 }

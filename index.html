@@ -487,7 +487,7 @@
                     </div>
                 </div>
                 <div class="col-lg-4 text-center mt-5 mt-lg-0">
-                    <i class="fas fa-shield-virus" style="font-size: 15rem; opacity: 0.1;"></i>
+                    <img src="./public/logo.png" alt="APIGOAT Logo" style="max-width: 300px; width: 100%; opacity: 0.9; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));">
                 </div>
             </div>
         </div>
@@ -687,7 +687,7 @@
                 <div class="col-6 col-md-3">
                     <div class="tech-icon">
                         <i class="fab fa-docker"></i>
-                        <h5>Docker Compose</h5>
+                        <h5>Docker</h5>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
@@ -710,8 +710,8 @@
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="tech-icon">
-                        <i class="fab fa-linux"></i>
-                        <h5>Alpine Linux</h5>
+                        <i class="fab fa-ubuntu"></i>
+                        <h5>Ubuntu 22.04</h5>
                     </div>
                 </div>
             </div>
@@ -750,7 +750,7 @@
                         cd apigoat
                     </div>
                     <div class="code-block">
-                        docker compose up -d
+                        docker build -t apigoat:all . && docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all
                     </div>
                     
                     <div class="alert alert-success mt-4" role="alert">
@@ -760,8 +760,8 @@
                     
                     <h4 class="mb-3 mt-5"><i class="fas fa-rocket"></i> What Happens?</h4>
                     <ul class="list-group">
-                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Docker Compose builds 11 containers</li>
-                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> MongoDB starts with demo data</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Single Docker container builds (Node.js 18 + MongoDB 7.0)</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Embedded MongoDB starts automatically</li>
                         <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> 10 vulnerable APIs launch on ports 8001-8010</li>
                         <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Web interface opens at port 8000</li>
                         <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Ready for exploitation in isolated environment</li>
