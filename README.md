@@ -1,5 +1,3 @@
-# 🐐 APIGOAT
-
 <div align="center">
 
 ![APIGOAT Banner](./web/public/logo.png)
