@@ -36,7 +36,7 @@
         
         /* Navbar */
         .navbar {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);
+            background: linear-gradient(135deg, var(--light-bg) 0%, #34495e 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 1rem 0;
         }
@@ -65,7 +65,7 @@
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a252f 100%);
+            background: linear-gradient(135deg, var(--light-bg) 0%, #1a252f 100%);
             color: white;
             padding: 100px 0;
             position: relative;
@@ -435,7 +435,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-shield-virus"></i>APIGOAT
+                <img src="./web/public/logo.png" alt="APIGOAT" style="height: 40px; margin-right: 10px; vertical-align: middle; background: white; padding: 5px 10px; border-radius: 8px;">
+                APIGOAT
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -453,6 +454,11 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#quick-start">Quick Start</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://hub.docker.com/r/yusufarbc/apigoat" target="_blank">
+                            <i class="fab fa-docker"></i> Docker Hub
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://github.com/yusufarbc/apigoat" target="_blank">
@@ -487,7 +493,7 @@
                     </div>
                 </div>
                 <div class="col-lg-4 text-center mt-5 mt-lg-0">
-                    <img src="./public/logo.png" alt="APIGOAT Logo" style="max-width: 300px; width: 100%; opacity: 0.9; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));">
+                    <img src="./web/public/logo.png" alt="APIGOAT Logo" style="max-width: 300px; width: 100%; opacity: 0.9; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3)); background: white; padding: 30px; border-radius: 20px;">
                 </div>
             </div>
         </div>
@@ -728,6 +734,23 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
+                    <div class="alert alert-info" role="alert">
+                        <h5><i class="fab fa-docker"></i> <strong>Quick Pull from Docker Hub (Recommended)</strong></h5>
+                        <p class="mb-2">No build required! Pull and run the pre-built image:</p>
+                        <div class="code-block">
+                            docker run -d --name apigoat -p 8000-8010:8000-8010 -p 27017:27017 yusufarbc/apigoat:latest
+                            <button class="copy-btn" onclick="copyCode(this, 'docker run -d --name apigoat -p 8000-8010:8000-8010 -p 27017:27017 yusufarbc/apigoat:latest')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="mt-2 mb-0">
+                            <i class="fas fa-link"></i> Available on <a href="https://hub.docker.com/r/yusufarbc/apigoat" target="_blank" class="alert-link">Docker Hub</a>
+                        </p>
+                    </div>
+                    
+                    <hr class="my-5">
+                    <h5 class="text-center text-muted mb-4">Or Build from Source:</h5>
+                    
                     <h4 class="mb-4"><i class="fab fa-windows"></i> Windows (PowerShell)</h4>
                     <div class="code-block">
                         git clone https://github.com/yusufarbc/apigoat.git

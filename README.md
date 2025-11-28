@@ -6,14 +6,14 @@
 
 ### A Deliberately Vulnerable RESTful API for Security Training
 
-[![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://www.docker.com/)
+[![Docker Hub](https://img.shields.io/docker/pulls/yusufarbc/apigoat)](https://hub.docker.com/r/yusufarbc/apigoat)
 [![OWASP](https://img.shields.io/badge/OWASP-API%20Top%2010%202023-red)](https://owasp.org/www-project-api-security/)
 [![Node.js](https://img.shields.io/badge/node.js-18-green?logo=node.js)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/license-GPL-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 **Educational platform showcasing OWASP API Security Top 10 (2023) vulnerabilities**
 
-[Quick Start](#-quick-start-one-click) • [Documentation](#-api-endpoints--vulnerabilities) • [Architecture](#-architecture) • [Contributing](#-contributing)
+[Quick Start](#-quick-start) • [Vulnerabilities](#-vulnerabilities) • [Learning Guide](#-learning-guide) • [Docker Hub](https://hub.docker.com/r/yusufarbc/apigoat)
 
 </div>
 
@@ -21,453 +21,163 @@
 
 ## 📖 About
 
-APIGOAT is a deliberately vulnerable RESTful API designed for **penetration testing training**, **exploit demonstrations**, and **secure coding education**. Built with Node.js, Express.js, and MongoDB, this project provides a safe, isolated environment to learn about API security vulnerabilities.
+APIGOAT is a deliberately vulnerable RESTful API designed for **penetration testing training**, **exploit demonstrations**, and **secure coding education**. Built with Node.js, Express.js, and MongoDB, packaged in a single Docker container for zero-configuration deployment.
+
+**Key Features:**
+- 🎯 Complete OWASP API Top 10 (2023) coverage
+- 🐳 Single Docker image (Node.js 18 + MongoDB 7.0 + 10 APIs + Web UI)
+- 🚀 One-command deployment from Docker Hub
+- 🔒 Isolated environment safe for exploitation
+- 📚 Interactive documentation and exploit examples
+- 💻 Cross-platform (Windows, Linux, macOS)
 
 **Originally initiated under OWASP Bursa Technical University Student Chapter**  
-**Fully developed and maintained by Yusuf Talha Arabacı**
-
-### ✨ Key Features
-
-- 🎯 **10 OWASP API Top 10 (2023) Vulnerabilities** - Complete coverage
-- 🐳 **Cloud-Native & Containerized** - Single Docker image (MongoDB + 10 APIs + Web)
-- 🔒 **Isolated Environment** - Safe for exploitation without risk
-- 📚 **Educational Focus** - Learn by doing with real vulnerable code
-- 🚀 **Zero Configuration** - No MongoDB Atlas or manual setup required
-- 💻 **Cross-Platform** - Works on Windows, Linux, and macOS
+**Developed and maintained by Yusuf Talha Arabacı**
 
 ---
 
-## 🚀 Quick Start (Single Container)
+## 🚀 Quick Start
 
-### Prerequisites
-
-- **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux)
-  - [Download Docker Desktop](https://www.docker.com/products/docker-desktop)
-  - No Node.js, MongoDB, or manual configuration needed!
-
-### Installation
+### Option 1: Pull from Docker Hub (Recommended)
 
 ```bash
-# Clone the repository
+docker run -d --name apigoat -p 8000-8010:8000-8010 -p 27017:27017 yusufarbc/apigoat:latest
+```
+
+Access at **http://localhost:8000** (ready in 10-15 seconds)
+
+### Option 2: Build from Source
+
+<details>
+<summary><strong>Click to expand build instructions</strong></summary>
+
+**Prerequisites:** Docker Desktop (Windows/Mac) or Docker Engine (Linux)
+
+```bash
+# Clone repository
 git clone https://github.com/yusufarbc/apigoat.git
 cd apigoat
-```
 
-### Launch
-
-<table>
-<tr>
-<td width="50%">
-
-**Windows (PowerShell)**
-
-```powershell
+# Windows
 .\start.ps1
-```
 
-</td>
-<td width="50%">
-
-**Linux / macOS**
-
-```bash
-# Build image (first time only)
+# Linux/macOS
 docker build -t apigoat:all .
-
-# Run container (maps all API ports + MongoDB)
-docker run -d --name apigoat-all \
-   -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 -p 8004:8004 \
-   -p 8005:8005 -p 8006:8006 -p 8007:8007 -p 8008:8008 -p 8009:8009 \
-   -p 8010:8010 -p 27017:27017 apigoat:all
+docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all
 ```
 
-</td>
-</tr>
-</table>
+**First build:** 2-3 minutes | **Subsequent runs:** 10-15 seconds
 
-### What Happens Next?
-
-The automated setup will:
-
-1. ✅ Build a single Ubuntu-based image (Node.js 18 + MongoDB 7.0)
-2. ✅ Start embedded MongoDB with health checks
-3. ✅ Launch 10 vulnerable APIs (ports 8001–8010)
-4. ✅ Start web interface (port 8000)
-5. ✅ Provide local MongoDB at mongodb://localhost:27017/apigoat
-6. ✅ (Windows) Auto-open http://localhost:8000 in browser
-
-![APIGOAT Interface](https://github.com/user-attachments/assets/9d08f073-9c29-4cce-a466-5baf3fa723ff)
-
-**Total startup time:** ~60–90 seconds on first build (subsequent runs faster)
+</details>
 
 ### Useful Commands
 
 ```bash
-# View logs
-docker logs -f apigoat-all
-
-# Stop / remove
-docker stop apigoat-all; docker rm apigoat-all
-
-# Rebuild after changes
-docker build -t apigoat:all .
+docker logs -f apigoat           # View logs
+docker stop apigoat              # Stop container
+docker rm apigoat                # Remove container
+docker restart apigoat           # Restart
 ```
-
-### Note on Previous Multi-Container Setup
-
-Earlier versions used 11 separate containers via Docker Compose. The lab now ships as a single image to simplify classroom / workshop environments and reduce resource overhead. Security behaviors and vulnerabilities remain unchanged.
 
 ---
 
 ## 🏗️ Architecture
 
-### System Overview
-
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                   Single Docker Container                    │
+│              Single Docker Container (~1.2GB)                │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │  Node.js 18 Runtime (Ubuntu 22.04)                     │ │
-│  │  ┌──────────────────────────────────────────────────┐ │ │
-│  │  │  Embedded MongoDB 7.0 (port 27017)               │ │ │
-│  │  └──────────────────────────────────────────────────┘ │ │
-│  │  Web UI (8000)                                        │ │
-│  │  API1–API10 (8001–8010)                               │ │
-│  │  Shared filesystem & in-memory communication          │ │
+│  │  Node.js 18 (Ubuntu 22.04)                             │ │
+│  │  ├─ MongoDB 7.0 (embedded, port 27017)                 │ │
+│  │  ├─ Web UI (port 8000)                                 │ │
+│  │  └─ API1-10 (ports 8001-8010)                          │ │
 │  └────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### Services
-
-| Service | Port | Purpose | Process Status |
-|---------|------|---------|----------------|
-| **web** | 8000 | HTML documentation & testing UI | Embedded |
-| **api1** | 8001 | BOLA vulnerability demo | Embedded |
-| **api2** | 8002 | Broken Authentication | Embedded |
-| **api3** | 8003 | BOPLA vulnerability | Embedded |
-| **api4** | 8004 | Resource Consumption | Embedded |
-| **api5** | 8005 | Function Level Auth | Embedded |
-| **api6** | 8006 | Business Flow Access | Embedded |
-| **api7** | 8007 | SSRF vulnerability | Embedded |
-| **api8** | 8008 | Security Misconfiguration | Embedded |
-| **api9** | 8009 | Improper Inventory | Embedded |
-| **api10** | 8010 | Unsafe API Consumption | Embedded |
-| **mongodb** | 27017 | Database with health checks | Embedded |
-
-### Technology Stack
-
-<div align="center">
-
-| Layer | Technology | Version | Purpose |
-|-------|-----------|---------|---------|
-| **Runtime** | Node.js | 18 (Ubuntu base) | JavaScript execution |
-| **Framework** | Express.js | 4.19.2 | Web application framework |
-| **Database** | MongoDB | 7.0 | NoSQL document storage |
-| **ODM** | Mongoose | 8.4.5 | MongoDB object modeling |
-| **Auth** | JWT + bcrypt | 9.0.2 / 5.1.1 | Token & password security |
-| **Container** | Docker | 20.10+ | Containerization |
-
-</div>
+**Tech Stack:**
+- **Runtime:** Node.js 18 | **Framework:** Express.js 4.19.2
+- **Database:** MongoDB 7.0 | **ODM:** Mongoose 8.4.5
+- **Auth:** JWT 9.0.2 + bcrypt 5.1.1
 
 ---
 
-## 📋 API Endpoints & Vulnerabilities
+## 🎯 Vulnerabilities
 
 ### OWASP API Security Top 10 (2023) Coverage
 
-<table>
-<thead>
-<tr>
-<th width="10%">API</th>
-<th width="10%">Port</th>
-<th width="30%">OWASP Category</th>
-<th width="50%">Vulnerability Description</th>
-</tr>
-</thead>
-<tbody>
-
-<tr>
-<td align="center"><strong>API1</strong></td>
-<td align="center">8001</td>
-<td><strong>API1:2023</strong><br>Broken Object Level Authorization</td>
-<td>
-• Access other users' files without ownership validation<br>
-• Horizontal privilege escalation via ID manipulation<br>
-• <code>GET /files/:fileId</code> accepts any ID
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API2</strong></td>
-<td align="center">8002</td>
-<td><strong>API2:2023</strong><br>Broken Authentication</td>
-<td>
-• Clear-text credentials transmitted over HTTP<br>
-• Continuous automated login attempts without rate limiting<br>
-• JWT token accepted in request body (insecure pattern)
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API3</strong></td>
-<td align="center">8003</td>
-<td><strong>API3:2023</strong><br>Broken Object Property Level Authorization</td>
-<td>
-• Expose sensitive user properties (<code>isAdmin</code>, private posts)<br>
-• Users can set admin privileges during signup<br>
-• <code>GET /users/:userId</code> returns all fields without filtering
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API4</strong></td>
-<td align="center">8004</td>
-<td><strong>API4:2023</strong><br>Unrestricted Resource Consumption</td>
-<td>
-• No rate limiting on API calls<br>
-• No pagination limits - fetch unlimited data<br>
-• <code>GET /products</code> returns entire database causing DoS
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API5</strong></td>
-<td align="center">8005</td>
-<td><strong>API5:2023</strong><br>Broken Function Level Authorization</td>
-<td>
-• Authentication middleware completely bypassed<br>
-• <code>check-auth.js</code> calls <code>next()</code> without verification<br>
-• <code>POST /books</code> creates resources without any token
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API6</strong></td>
-<td align="center">8006</td>
-<td><strong>API6:2023</strong><br>Unrestricted Access to Sensitive Business Flows</td>
-<td>
-• View all flight bookings without authentication<br>
-• <code>GET /bookings</code> exposes sensitive business data<br>
-• Payment flows accessible to anonymous users
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API7</strong></td>
-<td align="center">8007</td>
-<td><strong>API7:2023</strong><br>Server Side Request Forgery (SSRF)</td>
-<td>
-• User-controlled URLs in server-side HTTP requests<br>
-• <code>GET /weather?location=...</code> accepts any URL<br>
-• Access internal services (<code>http://mongodb:27017</code>)
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API8</strong></td>
-<td align="center">8008</td>
-<td><strong>API8:2023</strong><br>Security Misconfiguration</td>
-<td>
-• Permissive CORS policy (allows all origins)<br>
-• Debug endpoint exposes sensitive server info<br>
-• <code>GET /debug/info</code> should be removed in production
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API9</strong></td>
-<td align="center">8009</td>
-<td><strong>API9:2023</strong><br>Improper Inventory Management</td>
-<td>
-• Undocumented endpoints with unknown functionality<br>
-• <code>GET /unknown</code> hidden from documentation<br>
-• Inconsistent API versioning and endpoint discovery
-</td>
-</tr>
-
-<tr>
-<td align="center"><strong>API10</strong></td>
-<td align="center">8010</td>
-<td><strong>API10:2023</strong><br>Unsafe Consumption of APIs</td>
-<td>
-• Hardcoded external API keys in source code<br>
-• Unsanitized responses from OpenWeather API<br>
-• <code>GET /weather</code> exposes third-party data without validation
-</td>
-</tr>
-
-</tbody>
-</table>
-
-### Testing Endpoints
-
-Access the web interface at **http://localhost:8000** for:
-- 📄 Interactive API documentation
-- 🧪 Pre-built exploit examples
-- 🔗 Direct links to vulnerable endpoints
-- 📊 Request/response testing interface
+| API | Port | OWASP Category | Vulnerability |
+|-----|------|----------------|---------------|
+| **API1** | 8001 | Broken Object Level Authorization (BOLA) | Access other users' files without ownership validation |
+| **API2** | 8002 | Broken Authentication | Clear-text credentials over HTTP, no rate limiting |
+| **API3** | 8003 | Broken Object Property Level Authorization | Expose sensitive properties (`isAdmin`, private posts) |
+| **API4** | 8004 | Unrestricted Resource Consumption | No pagination or rate limiting → DoS vulnerability |
+| **API5** | 8005 | Broken Function Level Authorization | Authentication middleware bypassed (`next()` always called) |
+| **API6** | 8006 | Unrestricted Access to Business Flows | View all flight bookings without authentication |
+| **API7** | 8007 | Server Side Request Forgery (SSRF) | User-controlled URLs in server-side requests |
+| **API8** | 8008 | Security Misconfiguration | Permissive CORS, debug endpoints exposed |
+| **API9** | 8009 | Improper Inventory Management | Undocumented `/unknown` endpoint |
+| **API10** | 8010 | Unsafe Consumption of APIs | Hardcoded API keys, unsanitized external responses |
 
 ---
 
-## 🔧 Advanced Usage
-
-### Docker Commands
-
-```bash
-# View all service logs
-docker compose logs -f
-
-# View specific API logs
-docker compose logs -f api1
-docker compose logs -f mongodb
-
-# Check service status
-docker compose ps
-
-# Restart services
-docker compose restart              # All services
-docker compose restart api1         # Specific API
-
-# Stop services
-docker compose down                 # Stop containers
-docker compose down -v              # Stop and remove volumes (clean slate)
-
-# Rebuild after code changes
-docker compose up -d --build
-
-# View resource usage
-docker stats
-```
-
-### Database Access
-
-```bash
-# Connect from host machine
-mongosh mongodb://admin:apigoat123@localhost:27017/apigoat?authSource=admin
-
-# Connect from inside container
-docker exec -it apigoat-mongodb-1 mongosh -u admin -p apigoat123 --authenticationDatabase admin
-
-# Backup database
-docker exec apigoat-mongodb-1 mongodump --out /tmp/backup
-
-# View collections
-docker exec -it apigoat-mongodb-1 mongosh -u admin -p apigoat123 --eval "db.getMongo().getDBNames()"
-```
-
-### Troubleshooting
-
-<details>
-<summary><strong>Container fails to start</strong></summary>
-
-```bash
-# Check logs for error messages
-docker compose logs api1
-
-# Verify config.env exists
-ls config.env
-
-# Rebuild with no cache
-docker compose build --no-cache
-docker compose up -d
-```
-
-</details>
-
-<details>
-<summary><strong>MongoDB connection errors</strong></summary>
-
-```bash
-# Check MongoDB health
-docker compose ps mongodb
-
-# Verify MongoDB is ready
-docker exec apigoat-mongodb-1 mongosh --eval "db.adminCommand('ping')"
-
-# Restart with dependencies
-docker compose down
-docker compose up -d
-```
-
-</details>
-
-<details>
-<summary><strong>Port already in use</strong></summary>
-
-```bash
-# Find process using port 8000 (Windows)
-netstat -ano | findstr :8000
-
-# Find process using port 8000 (Linux/Mac)
-lsof -i :8000
-
-# Change port in config.env
-# Edit PORT_WEB=8000 to another port
-```
-
-</details>
-
----
-
-## 🎓 Learning & Exploitation Guide
+## 🎓 Learning Guide
 
 ### For Penetration Testers
 
-**Recommended Learning Path:**
+**Recommended Path:**
 
 1. **API1 - BOLA (Start Here)**
    ```bash
-   # Create two users and get their tokens
-   curl -X POST http://localhost:8001/signup -H "Content-Type: application/json" \
+   # Create two users
+   curl -X POST http://localhost:8001/signup \
+     -H "Content-Type: application/json" \
      -d '{"name":"Alice","email":"alice@test.com","password":"secret"}'
    
-   # Try accessing files with different IDs using Alice's token
-   curl http://localhost:8001/files/1 -H "Content-Type: application/json" \
+   # Access other users' files with Alice's token
+   curl http://localhost:8001/files/2 \
+     -H "Content-Type: application/json" \
      -d '{"token":"<alice_token>"}'
    ```
 
 2. **API7 - SSRF**
    ```bash
-   # Try accessing internal services
+   # Access internal services
    curl "http://localhost:8007/weather?location=http://mongodb:27017"
    
-   # Attempt cloud metadata access
+   # Attempt cloud metadata
    curl "http://localhost:8007/weather?location=http://169.254.169.254/latest/meta-data/"
    ```
 
-3. **Use Security Tools**
-   - **Burp Suite**: Intercept and modify requests
-   - **OWASP ZAP**: Automated vulnerability scanning
-   - **Postman**: API testing and exploitation
-   - **curl/httpie**: Command-line testing
+**Security Tools:**
+- **Burp Suite** - Intercept and modify requests
+- **OWASP ZAP** - Automated scanning
+- **Postman** - API testing
+- **curl/httpie** - Command-line testing
 
 ### For Developers
 
-**Code Review Checklist:**
+**Secure Coding Checklist:**
+- ✅ Validate ownership before resource access (fix BOLA)
+- ✅ Implement proper authentication middleware (fix API5)
+- ✅ Apply rate limiting and pagination (fix API4)
+- ✅ Filter sensitive properties from responses (fix API3)
+- ✅ Validate and sanitize external API responses (fix API10)
+- ✅ Restrict CORS to known origins (fix API8)
 
+**Code Review Exercise:**
 ```bash
 # Study vulnerable patterns
-1. Review API5/check-auth.js (bypassed authentication)
-2. Compare API1 vs secure RBAC implementations
-3. Analyze API4 for missing rate limiting
-4. Examine API3 for property-level authorization issues
+1. API5/check-auth.js - Bypassed authentication
+2. API1/routes.js - Missing ownership check
+3. API4/routes.js - No pagination limits
+4. API7/routes.js - SSRF via user input
 ```
 
-**Secure Coding Practice:**
-- ✅ Always validate user input
-- ✅ Implement proper authentication checks
-- ✅ Use role-based access control (RBAC)
-- ✅ Apply rate limiting and pagination
-- ✅ Sanitize external API responses
-- ✅ Avoid exposing sensitive properties
-
-### Learning Resources
-
+**Resources:**
 - 📖 [OWASP API Security Top 10 2023](https://owasp.org/www-project-api-security/)
-- 📺 [API Security Best Practices](https://owasp.org/www-community/api_security/)
 - 🔐 [JWT Security Best Practices](https://tools.ietf.org/html/rfc8725)
-- 📚 [RESTful API Security Guidelines](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html)
+- 📚 [REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html)
 
 ---
 
@@ -479,247 +189,166 @@ lsof -i :8000
 
 </div>
 
-**Critical Safety Guidelines:**
-
-| ❌ **DO NOT** | ✅ **DO** |
-|--------------|----------|
-| Deploy to production environments | Use in isolated lab environments only |
+| ❌ **NEVER** | ✅ **ALWAYS** |
+|-------------|--------------|
+| Deploy to production | Use in isolated lab environments |
 | Expose to public networks | Keep on local Docker networks |
-| Use in production codebases | Study code for educational purposes |
-| Connect to real user data | Use sample/test data only |
-| Run on shared infrastructure | Run on dedicated learning systems |
-
-**Why This Matters:**
-- These vulnerabilities are **real and exploitable**
-- Attackers can gain **unauthorized access** to systems
-- Data can be **stolen, modified, or deleted**
-- Systems can be **completely compromised**
+| Use with real data | Use sample/test data only |
+| Connect to production systems | Run on dedicated training machines |
 
 **Safe Usage:**
 ```bash
-# ✅ GOOD: Use the single container
-docker build -t apigoat:all .
-docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all
+# ✅ Good: Local isolated environment
+docker run -d --name apigoat -p 8000-8010:8000-8010 -p 27017:27017 yusufarbc/apigoat
 
-# ❌ BAD: Never expose publicly without network controls
-# Never bind 0.0.0.0 on untrusted networks
-```
-
-> **Note for Instructors**: Use this platform in sandboxed VMs or isolated networks for classroom training.
-
----
-
-## 🐳 Docker Optimization Features
-
-### What Makes This Cloud-Native?
-
-- **🎯 Zero Configuration**: No manual MongoDB setup or environment configuration
-- **🔒 Embedded Architecture**: MongoDB and all services in single container for simplicity
-- **💾 Stateful Design**: MongoDB runs in-memory or with volume mount for persistence
-- **🏥 Health Checks**: Built-in health monitoring for container orchestration
-- **📦 Ubuntu Base**: Node.js 18 + MongoDB 7.0 in one image (~1.2GB)
-- **🚀 Fast Startup**: All services launch together via startup script
-- **♻️ Reproducible**: Identical environment across all platforms and machines
-- **🔄 Easy Teardown**: Complete cleanup with `docker stop apigoat-all && docker rm apigoat-all`
-
-### Container Details
-
-```yaml
-Single Container Architecture:
-├─ Base: Ubuntu 22.04
-├─ Runtime: Node.js 18
-├─ Database: MongoDB 7.0 (embedded)
-├─ Services: 10 APIs + Web UI
-└─ Total Image Size: ~1.2 GB
-
-Previous Multi-Container: ~2.2 GB (11 containers)
-Current Single Container: ~1.2 GB ✅ 45% smaller + simpler deployment
-```
-
-### Migration from Legacy Setup
-
-**Before (Manual Setup):**
-```
-1. Install Node.js 18
-2. Install MongoDB locally or create Atlas account
-3. Configure connection strings
-4. Install dependencies for each API (npm install x11)
-5. Start each API in separate terminal
-6. Start web server
-❌ Complex, error-prone, platform-specific
-```
-
-**After (Docker):**
-```
-1. .\start.ps1  (Windows)
-   or
-   docker build -t apigoat:all . && docker run -d --name apigoat-all \
-     -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all  (Linux/Mac)
-✅ Simple, reliable, cross-platform
+# ❌ Bad: Exposing to public network
+docker run -d --name apigoat -p 0.0.0.0:8000:8000 ... # DON'T!
 ```
 
 ---
 
-## 📦 Manual Installation (Legacy Method)
+## 🔧 Advanced Usage
 
 <details>
-<summary><strong>⚠️ Not Recommended - Click to expand</strong></summary>
+<summary><strong>Database Access</strong></summary>
 
-### Prerequisites
-- Node.js 18 or higher
-- MongoDB running locally or MongoDB Atlas account
-- Git
+```bash
+# Connect from host
+mongosh mongodb://localhost:27017/apigoat
 
-### Setup Steps
+# Connect from inside container
+docker exec -it apigoat mongosh --eval "db.getMongo().getDBNames()"
 
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/yusufarbc/apigoat.git
-   cd apigoat
-   ```
-
-2. **Configure Environment**
-   
-   Edit `config.env`:
-   ```env
-   # MongoDB connection (local or Atlas)
-   mongoDBURL = mongodb://localhost:27017/apigoat
-   # or
-   mongoDBURL = mongodb+srv://<user>:<pass>@cluster.mongodb.net/apigoat
-
-   # OpenWeather API key (optional for API7/API10)
-   OPENWEATHER_API_KEY = your_api_key_here
-
-   # Port configurations (default: 8000-8010)
-   PORT_WEB=8000
-   PORT_API1=8001
-   # ... etc
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   # Install for each API (repeat 11 times)
-   cd API1 && npm install && cd ..
-   cd API2 && npm install && cd ..
-   cd API3 && npm install && cd ..
-   # ... and so on
-   cd web && npm install && cd ..
-   ```
-
-4. **Start Services**
-   
-   Open 11 separate terminal windows:
-   ```bash
-   # Terminal 1
-   cd web && node app.js
-   
-   # Terminal 2
-   cd API1 && node app.js
-   
-   # Terminal 3-11
-   # Repeat for API2 through API10
-   ```
-
-5. **Access Application**
-   
-   Navigate to http://localhost:8000
-
-### Why Docker is Better
-
-| Manual Setup | Docker Setup |
-|--------------|--------------|
-| 11 terminal windows | 1 command |
-| 30+ minutes setup | 60 seconds |
-| Platform-specific issues | Works everywhere |
-| Manual dependency management | Automated |
-| Hard to reproduce | Guaranteed consistent |
+# Backup
+docker exec apigoat mongodump --out /tmp/backup
+```
 
 </details>
 
+<details>
+<summary><strong>Troubleshooting</strong></summary>
+
+**Port conflicts:**
+```bash
+# Check port usage
+netstat -ano | findstr :8000  # Windows
+lsof -i :8000                 # Linux/Mac
+
+# Use different ports
+docker run -d -p 9000-9010:8000-8010 ... yusufarbc/apigoat
+```
+
+**Container issues:**
+```bash
+# View logs
+docker logs apigoat
+
+# Restart
+docker restart apigoat
+
+# Full cleanup
+docker stop apigoat && docker rm apigoat
+docker image prune -a
+```
+
+**Debug mode:**
+```bash
+# Enter container
+docker exec -it apigoat /bin/bash
+
+# Check services
+tail -f /var/log/api1.log
+tail -f /var/log/mongodb.log
+ps aux | grep node
+```
+
+</details>
+
+<details>
+<summary><strong>Performance Optimization</strong></summary>
+
+**MongoDB Indexes** (add to models for production-like scenarios):
+```javascript
+accountSchema.index({ email: 1 }, { unique: true });
+filesSchema.index({ number: 1 });
+bookSchema.index({ name: 1, author: 1 });
+```
+
+**Compression** (add to app.js):
+```javascript
+const compression = require('compression');
+app.use(compression());
+```
+
+**Current Metrics:**
+- Container Size: ~1.2 GB
+- Memory Usage: ~300-400 MB idle
+- Startup Time: 10-15 seconds
+- Can handle 100+ concurrent requests per API
+
+</details>
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+Contributions welcome! Ways to help:
 
-### Ways to Contribute
+- 🐛 Report bugs via [GitHub Issues](https://github.com/yusufarbc/apigoat/issues)
+- 💡 Suggest new vulnerability patterns
+- 📝 Improve documentation
+- 🔒 Add OWASP coverage examples
+- 🧪 Write security test cases
 
-- 🐛 **Report Bugs**: Open an issue with reproduction steps
-- 💡 **Suggest Features**: Propose new vulnerability examples
-- 📝 **Improve Documentation**: Fix typos, add examples
-- 🔒 **Add Vulnerabilities**: Implement new OWASP patterns
-- 🧪 **Write Tests**: Add security test cases
-- 🌐 **Translate**: Help with internationalization
-
-### Development Workflow
-
+**Quick Development Setup:**
 ```bash
-# 1. Fork the repository on GitHub
-
-# 2. Clone your fork
 git clone https://github.com/YOUR_USERNAME/apigoat.git
 cd apigoat
+git checkout -b feature/your-feature
 
-# 3. Create a feature branch
-git checkout -b feature/your-feature-name
+# Test changes
+docker build -t apigoat:test .
+docker run -d --name apigoat-test -p 8000-8010:8000-8010 apigoat:test
 
-# 4. Make your changes and test
-docker build -t apigoat:all . && docker run -d --name apigoat-test -p 8000-8010:8000-8010 apigoat:all
-
-# 5. Commit with descriptive messages
-git commit -m "Add: Implement new vulnerability example for API11"
-
-# 6. Push to your fork
-git push origin feature/your-feature-name
-
-# 7. Open a Pull Request
+# Submit PR
+git commit -m "Add: Description"
+git push origin feature/your-feature
 ```
 
-### Coding Standards
-
-- **Node.js**: Follow Airbnb JavaScript Style Guide
-- **Docker**: Single-container architecture for educational simplicity
-- **Security**: Document vulnerable patterns clearly with comments
-- **Documentation**: Update README.md for new features
-
-### Pull Request Checklist
-
-- [ ] Code builds without errors (`docker build -t apigoat:all .`)
-- [ ] Container starts successfully (`docker run -d --name apigoat-all -p 8000-8010:8000-8010 -p 27017:27017 apigoat:all`)
-- [ ] Changes are well-documented with comments
-- [ ] README.md updated (if applicable)
-- [ ] No unintentional security improvements (keep vulnerabilities intact)
+**PR Checklist:**
+- [ ] Code builds without errors
+- [ ] Container starts successfully
+- [ ] Changes documented with comments
+- [ ] README updated (if needed)
+- [ ] Vulnerabilities remain intact (no accidental fixes!)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **GNU General Public License v3.0** (GPL-3.0)
+Licensed under **GNU General Public License v3.0 (GPL-3.0)**
 
-**What this means:**
-- ✅ You can use, modify, and distribute this code
-- ✅ You must disclose source code when distributing
-- ✅ You must use the same GPL-3.0 license for derivatives
-- ✅ You must state changes made to the original code
+- ✅ Use, modify, and distribute freely
+- ✅ Must disclose source code
+- ✅ Same license for derivatives
+- ✅ State changes made
 
-See [LICENSE](LICENSE) file for full details.
+See [LICENSE](LICENSE) for full details.
 
 ---
 
-## 👨‍💻 Author & Maintainer
+## 👨‍💻 Author
 
 <div align="center">
 
-### Yusuf Talha Arabacı
-
-**Cyber Security Engineer**
+**Yusuf Talha Arabacı**  
+*Cyber Security Engineer*
 
 [![GitHub](https://img.shields.io/badge/GitHub-yusufarbc-181717?logo=github)](https://github.com/yusufarbc)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?logo=linkedin)](https://linkedin.com/in/yusufarbc)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-apigoat-2496ED?logo=docker)](https://hub.docker.com/r/yusufarbc/apigoat)
 
-**Originally initiated under:**  
-**OWASP Bursa Technical University Student Chapter**
+*Originally initiated under OWASP Bursa Technical University Student Chapter*
 
 </div>
 
@@ -727,37 +356,32 @@ See [LICENSE](LICENSE) file for full details.
 
 ## 🙏 Acknowledgments
 
-- **OWASP Foundation** - For API Security Top 10 2023 framework
-- **OWASP Bursa Technical University** - For project initiation support
-- **Open Source Community** - For tools and libraries used in this project
+- **OWASP Foundation** - API Security Top 10 2023 framework
+- **OWASP Bursa Technical University** - Project initiation support
+- **Open Source Community** - Tools and libraries
 
 ---
 
-## 📞 Support & Contact
+## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yusufarbc/apigoat/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yusufarbc/apigoat/discussions)
-- 📧 **Email**: Available via GitHub profile
+- 🐛 [GitHub Issues](https://github.com/yusufarbc/apigoat/issues)
+- 💬 [GitHub Discussions](https://github.com/yusufarbc/apigoat/discussions)
+- 📧 Email via GitHub profile
+- 🐳 [Docker Hub](https://hub.docker.com/r/yusufarbc/apigoat)
 
 ---
-
-## ⭐ Star History
-
-If you find this project helpful for learning API security, please consider giving it a star! ⭐
 
 <div align="center">
+
+**⭐ If this helped you learn API security, please star the repo! ⭐**
 
 [![Star History Chart](https://api.star-history.com/svg?repos=yusufarbc/apigoat&type=Date)](https://star-history.com/#yusufarbc/apigoat&Date)
 
-</div>
-
 ---
-
-<div align="center">
 
 **Made with ❤️ for the security community**
 
-**Remember: Learn to break, learn to build better.**
+*Learn to break, learn to build better.*
 
 [⬆ Back to Top](#-apigoat)
 
