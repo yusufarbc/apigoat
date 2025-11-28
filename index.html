@@ -16,14 +16,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
+                /* Navbar her durumda beyaz arka plan ve koyu metin */
+                .navbar,
+                .navbar.sticky-top,
+                .navbar.scrolled,
+                .navbar.navbar-dark,
+                .navbar.navbar-light {
+                    background: #fff !important;
+                    color: #222 !important;
+                }
+                .navbar .nav-link,
+                .navbar .navbar-brand {
+                    color: #222 !important;
+                }
         :root {
             --primary-color: #e74c3c;
-            --secondary-color: #2c3e50;
+            --secondary-color: #222;
             --accent-color: #3498db;
             --success-color: #27ae60;
             --warning-color: #f39c12;
-            --dark-bg: #1a1a1a;
-            --light-bg: #f8f9fa;
+            --white-bg: #fff;
         }
         
         * {
@@ -32,19 +44,20 @@
         
         body {
             overflow-x: hidden;
+            background: var(--white-bg);
         }
         
         /* Navbar */
         .navbar {
-            background: linear-gradient(135deg, var(--light-bg) 0%, #34495e 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: var(--white-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
             padding: 1rem 0;
         }
         
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: white !important;
+            color: var(--secondary-color) !important;
         }
         
         .navbar-brand i {
@@ -53,34 +66,23 @@
         }
         
         .nav-link {
-            color: rgba(255,255,255,0.8) !important;
+            color: var(--secondary-color) !important;
             font-weight: 500;
             transition: color 0.3s;
             margin: 0 10px;
         }
         
         .nav-link:hover {
-            color: white !important;
+            color: var(--primary-color) !important;
         }
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, var(--light-bg) 0%, #1a252f 100%);
-            color: white;
+            background: var(--white-bg);
+            color: var(--secondary-color);
             padding: 100px 0;
             position: relative;
             overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23e74c3c" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-            background-size: cover;
         }
         
         .hero-content {
@@ -120,8 +122,8 @@
         }
         
         .btn-outline-custom {
-            border: 2px solid white;
-            color: white;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
             padding: 15px 40px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -131,8 +133,8 @@
         }
         
         .btn-outline-custom:hover {
-            background: white;
-            color: var(--secondary-color);
+            background: var(--secondary-color);
+            color: white;
             transform: translateY(-3px);
         }
         
@@ -435,8 +437,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="./web/public/logo.png" alt="APIGOAT" style="height: 40px; margin-right: 10px; vertical-align: middle; background: white; padding: 5px 10px; border-radius: 8px;">
-                APIGOAT
+                <span style="display: flex; align-items: center; gap: 16px;">
+                    <img src="./web/public/logo.png" alt="APIGOAT" style="height: 56px; width: 56px; object-fit: contain;">
+                    <span style="font-weight: 700; font-size: 2rem; color: #222; letter-spacing: 1px;">APIGOAT</span>
+                </span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -493,7 +497,7 @@
                     </div>
                 </div>
                 <div class="col-lg-4 text-center mt-5 mt-lg-0">
-                    <img src="./web/public/logo.png" alt="APIGOAT Logo" style="max-width: 300px; width: 100%; opacity: 0.9; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3)); background: white; padding: 30px; border-radius: 20px;">
+                    <img src="./web/public/logo.png" alt="APIGOAT Logo" style="max-width: 420px; width: 100%; opacity: 1;">
                 </div>
             </div>
         </div>
